@@ -58,5 +58,55 @@ export const getAvailablePartners = async (req, res) => {
 };
 
 
+export const getAllPartners = async (req, res) => {
+  try {
+    const partners = await User.find({ role: "partner" }).select("-password"); 
+    res.status(200).json(partners);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching partners", error: error.message });
+  }
+};
+
+
+
+export const editPartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email, ...updateData } = req.body; // exclude email if passed
+
+    const updatedPartner = await User.findOneAndUpdate(
+      { _id: id, role: "partner" },
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedPartner) {
+      return res.status(404).json({ message: "Partner not found" });
+    }
+
+    res.status(200).json(updatedPartner);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating partner", error: error.message });
+  }
+};
+
+// ✅ Delete partner
+export const deletePartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedPartner = await User.findOneAndDelete({ _id: id, role: "partner" });
+    if (!deletedPartner) {
+      return res.status(404).json({ message: "Partner not found" });
+    }
+
+    res.status(200).json({ message: "Partner deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting partner", error: error.message });
+  }
+};
+
+
+
 
 

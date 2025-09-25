@@ -100,3 +100,39 @@ export const updateOrderStatus = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+
+
+
+// ✅ Get all orders with assigned partner ID and name
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("assignedPartner", "name") // only populate the partner's name
+      .sort({ createdAt: -1 });
+
+    // Map orders to include assignedPartner id and name explicitly
+    const formattedOrders = orders.map((order) => ({
+      _id: order._id,
+      deliveryName: order.deliveryName,
+      address: order.address,
+      status: order.status,
+      deliveryDate: order.deliveryDate,
+      location: order.location,
+      assignedPartner: order.assignedPartner
+        ? { _id: order.assignedPartner._id, name: order.assignedPartner.name }
+        : null,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+    }));
+
+    res.status(200).json(formattedOrders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Error fetching orders", error: error.message });
+  }
+};
+
+
+
+
