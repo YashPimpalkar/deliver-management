@@ -1,26 +1,20 @@
 import express from "express";
 import dotenv from "dotenv";
-import locationRoutes from "./routes/locationRoutes.js";
+import cors from "cors";
+import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-import connectDB from "./config/db.js";
-
+import locationRoutes from "./routes/locationRoutes.js";
 dotenv.config();
-const app = express();
-
-// Middleware
-app.use(express.json());
-
-// Connect Database
 connectDB();
 
-// Routes
+const app = express();
+app.use(cors());
+app.use(express.json());
+
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/location", locationRoutes);
+app.use("/api/locations", locationRoutes);
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
