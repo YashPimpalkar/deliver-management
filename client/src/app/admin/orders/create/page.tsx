@@ -3,15 +3,20 @@ import React, { useState, useEffect } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import DeliveryForm from "@/components/orders/DeliveryForm";
-
 import PartnerSelector from "@/components/orders/PartnerSelector";
 import SubmitButtons from "@/components/orders/SubmitButtons";
 import dynamic from "next/dynamic";
+
 const MapPicker = dynamic(() => import("@/components/orders/MapPicker"), { ssr: false });
+
 interface Partner {
-  _id: string;
+  id: string;
   name: string;
   email: string;
+  lastLocation?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export default function CreateOrderPage() {
@@ -30,7 +35,7 @@ export default function CreateOrderPage() {
   useEffect(() => {
     const fetchPartners = async () => {
       try {
-        const res = await api.get("/api/users?role=partner");
+        const res = await api.get("/api/users/available");
         setPartners(res.data);
       } catch (err) {
         console.error(err);
@@ -47,7 +52,7 @@ export default function CreateOrderPage() {
     }
     setLoading(true);
     try {
-      await api.post("/api/orders", {
+      await api.post("/api/orders/", {
         deliveryName: deliveryName.trim(),
         address: address.trim(),
         deliveryDate: new Date(`${deliveryDate}T${deliveryTime}`),
@@ -62,6 +67,8 @@ export default function CreateOrderPage() {
       setLoading(false);
     }
   };
+
+  console.log(selectedPartner)
 
   return (
     <main className="flex items-center justify-center min-h-screen p-6 bg-gray-50">

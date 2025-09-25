@@ -25,8 +25,7 @@ export default function LoginPage() {
         email,
         password,
       });
-      setAuth(res.data.token, res.data.role);
-
+      setAuth(res.data.token, res.data.role,res.data.userid); // Save token, role and userid to localStorage
       if (res.data.role === "admin") {
         router.push("/admin");
       } else if (res.data.role === "partner") {

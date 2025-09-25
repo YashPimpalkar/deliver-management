@@ -8,19 +8,23 @@ export const createOrder = async (req, res) => {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Only admins can create orders" });
     }
+    console.log(req.body);
+    const { deliveryName, address, location, deliveryDate, assignedPartner } =
+      req.body;
 
-    const { deliveryName, address, location, deliveryDate, deliveryTime } = req.body;
-
-    if (!deliveryName || !address || !location || !deliveryDate || !deliveryTime) {
-      return res.status(400).json({ message: "All required fields must be provided" });
+    if (!deliveryName || !address || !location || !deliveryDate) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be provided" });
     }
-
+    const status = assignedPartner ? "assigned" : "pending";
     const order = new Order({
       deliveryName,
       address,
       location,
       deliveryDate,
-      deliveryTime,
+      assignedPartner,
+      status,
     });
 
     await order.save();
@@ -60,7 +64,9 @@ export const assignOrder = async (req, res) => {
 export const getMyOrders = async (req, res) => {
   try {
     if (req.user.role !== "partner") {
-      return res.status(403).json({ message: "Only partners can view their orders" });
+      return res
+        .status(403)
+        .json({ message: "Only partners can view their orders" });
     }
 
     const orders = await Order.find({ assignedPartner: req.user._id });
