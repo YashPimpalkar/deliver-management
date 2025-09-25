@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import UserLocation from "../models/UserLocation.js";
+import Order from "../models/Order.js";
 // Update availability status
 export const updateAvailability = async (req, res) => {
   try {
@@ -105,6 +106,11 @@ export const deletePartner = async (req, res) => {
     res.status(500).json({ message: "Error deleting partner", error: error.message });
   }
 };
+
+
+
+
+
 
 
 

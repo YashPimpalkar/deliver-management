@@ -47,11 +47,7 @@ export default function LocationDisplay({ lat, lng}: LocationDisplayProps) {
   const location: L.LatLngExpression = [lat, lng];
 
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Location
-      </label>
-      
+    <div>      
       <div className="h-64 w-full border border-gray-300 rounded-lg overflow-hidden mb-2">
         <MapContainer 
           center={center} 

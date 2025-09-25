@@ -11,4 +11,5 @@ router.get("/allpartners", protect, getAllPartners);
 router.put("/:id", editPartner);
 router.delete("/:id", deletePartner);
 
+
 export default router;
