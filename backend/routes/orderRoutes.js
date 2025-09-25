@@ -24,13 +24,13 @@ router.put("/:id/status", protect, updateOrderStatus);
 router.get("/getall",protect, getAllOrders);
 
 
-router.get("/:id", getOrderById);
+router.get("/:id", protect, getOrderById);
 
 // PUT update order
-router.put("/:id", editOrder);
+router.put("/:id", protect, editOrder);
 
 // DELETE order
-router.delete("/:id", deleteOrder);
+router.delete("/:id", protect, deleteOrder);
 
 
 export default router;

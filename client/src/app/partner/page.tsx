@@ -16,7 +16,18 @@ import {
 } from "lucide-react";
 import api from "@/lib/axios";
 import { getUserId } from "@/lib/auth";
-import LocationDisplay from "@/components/LocationDisplay";
+import dynamic from "next/dynamic";
+const LocationDisplay = dynamic(() => import("@/components/LocationDisplay"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-40 bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className="text-center">
+        <MapPin className="mx-auto text-gray-400 mb-2" size={24} />
+        <p className="text-gray-500 text-sm">Loading map...</p>
+      </div>
+    </div>
+  ),
+});
 
 // Define types
 type Order = {
