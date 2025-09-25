@@ -20,7 +20,7 @@ export const registerUser = async (req, res) => {
     const user = new User({ name, email, password, role });
     await user.save();
 
-    res.status(201).json({ token: generateToken(user._id), role: user.role });
+    res.status(201).json({ token: generateToken(user._id), role: user.role ,userid: user._id});
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

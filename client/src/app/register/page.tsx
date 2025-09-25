@@ -31,7 +31,7 @@ export default function RegisterPage() {
       });
 
       // Save token + role
-      setAuth(res.data.token, res.data.role);
+      setAuth(res.data.token, res.data.role,res.data.userid);
 
       // Redirect after register
       if (res.data.role === "admin") {

@@ -331,7 +331,7 @@ export default function OrdersPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <Link
-                            href={`/admin/orders/manage?orderId=${order._id}`}
+                            href={`/admin/orders/${order._id}`}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
                           >
                             Manage Order
