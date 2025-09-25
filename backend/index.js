@@ -1,20 +1,26 @@
 import express from "express";
-import {
-  createOrder,
-  assignOrder,
-  getMyOrders,
-  updateOrderStatus,
-} from "../controllers/orderController.js";
-import protect from "../middleware/authMiddleware.js";
+import dotenv from "dotenv";
+import locationRoutes from "./routes/locationRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import connectDB from "./config/db.js";
 
-const router = express.Router();
+dotenv.config();
+const app = express();
 
-// Admin routes
-router.post("/", protect, createOrder);
-router.put("/:id/assign", protect, assignOrder);
+// Middleware
+app.use(express.json());
 
-// Partner routes
-router.get("/my-orders", protect, getMyOrders);
-router.put("/:id/status", protect, updateOrderStatus);
+// Connect Database
+connectDB();
 
-export default router;
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/location", locationRoutes);
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
