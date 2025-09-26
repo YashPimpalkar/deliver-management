@@ -211,10 +211,10 @@ export default function AdminDashboard() {
             <h2 className="text-xl font-semibold text-gray-700 mb-4">Management Actions</h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link 
-                href="/admin/deliveries" 
+                href="/admin/orders" 
                 className="flex-1 text-center bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-300"
               >
-                Manage Deliveries
+                Manage Orders
               </Link>
               <Link 
                 href="/admin/partners" 

@@ -3,8 +3,6 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import dynamic from "next/dynamic";
-import PartnerSelector from "@/components/orders/PartnerSelector";
-import EditPartnerSelector from "@/components/orders/EditPartnerSelector";
 import LocationDisplay from "@/components/LocationDisplay";
 
 // Dynamically import the map component
@@ -81,7 +79,7 @@ export default function OrderPage() {
             lat: orderRes.data.location.lat,
             lng: orderRes.data.location.lng,
           });
-          setSelectedPartner(orderRes.data.assignedPartner?._id || "");
+          setSelectedPartner(orderRes.data.assignedPartner?.id || "");
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -152,6 +150,12 @@ export default function OrderPage() {
     setIsEditing(false);
   };
 
+  // Filter partners based on search
+  const filteredPartners = partners.filter(partner =>
+    partner.name.toLowerCase().includes(partnerSearch.toLowerCase()) ||
+    partner.email.toLowerCase().includes(partnerSearch.toLowerCase())
+  );
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -160,7 +164,9 @@ export default function OrderPage() {
     );
 
   if (!order) return <p className="p-6 text-red-600">Order not found.</p>;
+  
   console.log(selectedPartner);
+  
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
@@ -296,13 +302,44 @@ export default function OrderPage() {
                   Assigned Partner
                 </label>
                 {isEditing ? (
-                  <EditPartnerSelector
-                    partners={partners}
-                    search={partnerSearch}
-                    setSearch={setPartnerSearch}
-                    selectedPartner={selectedPartner}
-                    setSelectedPartner={setSelectedPartner}
-                  />
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder="Search partners by name or email..."
+                      value={partnerSearch}
+                      onChange={(e) => setPartnerSearch(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    
+                    <select
+                      value={selectedPartner}
+                      onChange={(e) => setSelectedPartner(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select a partner</option>
+                      {filteredPartners.map((partner) => (
+                        <option key={partner.id} value={partner.id}>
+                          {partner.name} ({partner.email})
+                        </option>
+                      ))}
+                    </select>
+                    
+                    {filteredPartners.length === 0 && partnerSearch && (
+                      <p className="text-sm text-gray-500">No partners found matching your search.</p>
+                    )}
+                    
+                    <div className="text-sm text-gray-600">
+                      {selectedPartner ? (
+                        <div>
+                          <strong>Selected:</strong> {
+                            partners.find(p => p.id === selectedPartner)?.name
+                          }
+                        </div>
+                      ) : (
+                        <p>No partner selected</p>
+                      )}
+                    </div>
+                  </div>
                 ) : order.assignedPartner ? (
                   <div className="space-y-1">
                     <p className="text-gray-900">
@@ -312,7 +349,7 @@ export default function OrderPage() {
                       <strong>Email:</strong> {order.assignedPartner.email}
                     </p>
                     <p className="text-gray-900">
-                      <strong>ID:</strong> {selectedPartner}
+                      <strong>ID:</strong> {order.assignedPartner.id}
                     </p>
                   </div>
                 ) : (
