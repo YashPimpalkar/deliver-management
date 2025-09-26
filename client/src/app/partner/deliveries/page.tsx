@@ -4,7 +4,14 @@ import { useState, useEffect, useMemo } from "react";
 import { Search, Filter, Edit3, Truck, CheckCircle, Clock, MapPin, RefreshCw } from "lucide-react";
 import api from "@/lib/axios";
 import { getUserId } from "@/lib/auth";
-import LocationDisplay from "@/components/LocationDisplay";
+import dynamic from "next/dynamic";
+
+
+const LocationDisplay = dynamic(() => import("@/components/LocationDisplay"), {
+  ssr: false,
+
+});
+
 
 interface Order {
   _id: string;

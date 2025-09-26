@@ -11,6 +11,7 @@ const MapPicker = dynamic(() => import("@/components/orders/MapPicker"), {
 });
 
 interface Partner {
+  _id: string;
   id: string;
   name: string;
   email: string;
@@ -43,7 +44,7 @@ export default function OrderPage() {
   const [saving, setSaving] = useState(false);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [partnerSearch, setPartnerSearch] = useState("");
-  const [selectedPartner, setSelectedPartner] = useState("");
+  const [selectedPartnerId, setSelectedPartnerId] = useState("");
 
   // Editable fields state
   const [formData, setFormData] = useState({
@@ -61,7 +62,7 @@ export default function OrderPage() {
         setLoading(true);
         const [orderRes, partnersRes] = await Promise.all([
           api.get(`/api/orders/${orderid}`),
-          api.get("/api/users/allpartners"), // Adjust this endpoint as needed
+          api.get("/api/users/allpartners"),
         ]);
 
         setOrder(orderRes.data);
@@ -79,7 +80,8 @@ export default function OrderPage() {
             lat: orderRes.data.location.lat,
             lng: orderRes.data.location.lng,
           });
-          setSelectedPartner(orderRes.data.assignedPartner?.id || "");
+          // Use _id for the assigned partner
+          setSelectedPartnerId(orderRes.data.assignedPartner?._id || "");
         }
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -120,7 +122,7 @@ export default function OrderPage() {
           lat: formData.lat,
           lng: formData.lng,
         },
-        assignedPartner: selectedPartner || null,
+        assignedPartner: selectedPartnerId || null,
       };
 
       const res = await api.put(`/api/orders/${orderid}`, updateData);
@@ -145,7 +147,7 @@ export default function OrderPage() {
         lat: order.location.lat,
         lng: order.location.lng,
       });
-      setSelectedPartner(order.assignedPartner?.id || "");
+      setSelectedPartnerId(order.assignedPartner?._id || "");
     }
     setIsEditing(false);
   };
@@ -156,6 +158,9 @@ export default function OrderPage() {
     partner.email.toLowerCase().includes(partnerSearch.toLowerCase())
   );
 
+  // Get the selected partner object
+  const selectedPartner = partners.find(partner => partner._id === selectedPartnerId);
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -164,8 +169,6 @@ export default function OrderPage() {
     );
 
   if (!order) return <p className="p-6 text-red-600">Order not found.</p>;
-  
-  console.log(selectedPartner);
   
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -312,13 +315,13 @@ export default function OrderPage() {
                     />
                     
                     <select
-                      value={selectedPartner}
-                      onChange={(e) => setSelectedPartner(e.target.value)}
+                      value={selectedPartnerId}
+                      onChange={(e) => setSelectedPartnerId(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="">Select a partner</option>
                       {filteredPartners.map((partner) => (
-                        <option key={partner.id} value={partner.id}>
+                        <option key={partner._id} value={partner._id}>
                           {partner.name} ({partner.email})
                         </option>
                       ))}
@@ -331,9 +334,7 @@ export default function OrderPage() {
                     <div className="text-sm text-gray-600">
                       {selectedPartner ? (
                         <div>
-                          <strong>Selected:</strong> {
-                            partners.find(p => p.id === selectedPartner)?.name
-                          }
+                          <strong>Selected Partner:</strong> {selectedPartner.name} ({selectedPartner.email})
                         </div>
                       ) : (
                         <p>No partner selected</p>
@@ -349,7 +350,7 @@ export default function OrderPage() {
                       <strong>Email:</strong> {order.assignedPartner.email}
                     </p>
                     <p className="text-gray-900">
-                      <strong>ID:</strong> {order.assignedPartner.id}
+                      <strong>ID:</strong> {order.assignedPartner._id}
                     </p>
                   </div>
                 ) : (
