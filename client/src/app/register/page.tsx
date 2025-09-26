@@ -2,9 +2,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "@/lib/axios";
-import { setAuth } from "@/lib/auth";
+import { getRole, setAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, Mail, Lock, Loader2 } from "lucide-react";
@@ -18,6 +18,34 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+
+ useEffect(() => {
+    const checkAuth = () => {
+   
+      const  role  = getRole();
+      const token = localStorage.getItem("token");
+      
+      if (token) {
+        // Redirect based on role if token exists
+        if (role === "admin") {
+          router.push("/admin");
+        } else if (role === "partner") {
+          router.push("/partner");
+        } else {
+        // Fallback for unexpected roles
+        }
+      } else {
+
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+
+
+
 
   const handleRegister = async () => {
     setError("");

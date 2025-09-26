@@ -2,13 +2,14 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "@/lib/axios"; // Your API instance
 import { setAuth } from "@/lib/auth"; // Your auth utility
 import { useRouter } from "next/navigation";
 import { Mail, Lock, LogIn, Loader2 } from "lucide-react"; // Icons from lucide-react
 import Link from "next/link";
 import { AxiosError } from "axios";
+import { getRole } from "@/lib/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -16,6 +17,36 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+
+
+
+
+
+
+ useEffect(() => {
+    const checkAuth = () => {
+   
+      const  role  = getRole();
+      const token = localStorage.getItem("token");
+      
+      if (token) {
+        // Redirect based on role if token exists
+        if (role === "admin") {
+          router.push("/admin");
+        } else if (role === "partner") {
+          router.push("/partner");
+        } else {
+        // Fallback for unexpected roles
+        }
+      } else {
+
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
 
   const handleLogin = async () => {
     setError(""); // Clear previous errors
