@@ -1,4 +1,5 @@
 import Order from "../models/Order.js";
+import User from "../models/User.js";
 
 // @desc    Admin: Create new order
 // @route   POST /api/orders
@@ -181,6 +182,38 @@ export const deleteOrder = async (req, res) => {
   }
 };
 
+
+
+
+// Get all orders assigned to a specific partner by user ID
+export const getOrdersByPartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate user exists
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Get all orders assigned to this partner
+    const orders = await Order.find({ assignedPartner: id })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      orders: orders,
+      totalOrders: orders.length
+    });
+
+  } catch (error) {
+    console.error("Error fetching partner orders:", error);
+    res.status(500).json({ 
+      success: false,
+      error: "Internal server error" 
+    });
+  }
+};
 
 
 

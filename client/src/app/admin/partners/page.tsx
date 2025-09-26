@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 // import api from "@/lib/axios";
 import { Pencil, Trash2, Check, X, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
-// --- Mock API for demonstration purposes (replace with your actual api import) ---
 import api from "@/lib/axios";
-// --- End of Mock API ---
+
 
 interface Partner {
   _id: string;

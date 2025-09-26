@@ -8,6 +8,7 @@ import {
   getOrderById,
   editOrder,
   deleteOrder,
+  getOrdersByPartner,
 } from "../controllers/orderController.js";
 import protect from "../middleware/authMiddleware.js";
 
@@ -25,6 +26,7 @@ router.get("/getall",protect, getAllOrders);
 
 
 router.get("/:id", protect, getOrderById);
+router.get("/partner/:id", protect, getOrdersByPartner);
 
 // PUT update order
 router.put("/:id", protect, editOrder);
