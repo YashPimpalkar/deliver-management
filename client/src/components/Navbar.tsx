@@ -3,8 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { getRole, logout } from "@/lib/auth"; // Your authentication functions
-import { Boxes, Menu, X, LogOut } from "lucide-react"; // Icons
+import { getRole, logout } from "@/lib/auth";
+import {
+  Menu,
+  X,
+  LogOut,
+  LogIn,
+  UserPlus,
+  Truck,
+} from "lucide-react";
 
 export default function Navbar() {
   const [role, setRole] = useState<string | null>(null);
@@ -25,16 +32,17 @@ export default function Navbar() {
 
   const navLinks = [
     { title: "Home", href: "/", roles: ["admin", "partner", null] },
-    // Admin Links
+    { title: "Features", href: "#features", roles: ["admin", "partner", null] },
+    { title: "Pricing", href: "#pricing", roles: ["admin", "partner", null] },
+    { title: "Contact", href: "#contact", roles: ["admin", "partner", null] },
     { title: "Dashboard", href: "/admin", roles: ["admin"] },
     { title: "Orders", href: "/admin/orders", roles: ["admin"] },
-    // Partner Links
     { title: "My Deliveries", href: "/partner", roles: ["partner"] },
   ];
 
-  const renderLinks = (isMobile = false) => {
-    return navLinks
-      .filter(link => link.roles.includes(role))
+  const renderLinks = (isMobile = false) =>
+    navLinks
+      .filter((link) => link.roles.includes(role))
       .map((link) => {
         const isActive = pathname === link.href;
         return (
@@ -42,104 +50,102 @@ export default function Navbar() {
             key={link.title}
             href={link.href}
             onClick={() => setIsMenuOpen(false)}
-            className={`
-              ${isMobile ? "text-lg" : "text-sm"}
-              ${isActive ? "text-white bg-white/10" : "text-gray-300"}
-              font-medium rounded-md px-3 py-2 transition-all duration-200 hover:text-white hover:bg-white/10
-            `}
+            className={`${
+              isMobile
+                ? "text-lg text-slate-800"
+                : "text-slate-700 hover:text-blue-600"
+            } ${
+              isActive ? "text-blue-600 font-semibold" : "font-medium"
+            } transition-colors`}
           >
             {link.title}
           </Link>
         );
       });
-  };
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-50 bg-black/30 backdrop-blur-lg border-b border-white/10">
+      {/* HEADER */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0 flex items-center gap-2 text-white font-bold text-xl">
-              <Boxes className="h-7 w-7 text-blue-400" />
-              Rentkar
-            </Link>
+            <div className="flex items-center space-x-2">
+              <Truck className="h-8 w-8 text-blue-600" />
+              <span className="text-2xl font-bold text-slate-900">SwiftFlow</span>
+            </div>
 
-            {/* Desktop Menu */}
+            {/* Desktop Nav Links */}
+            <nav className="hidden md:flex space-x-8">{renderLinks()}</nav>
+
+            {/* Auth Buttons */}
             <div className="hidden md:flex items-center space-x-4">
-              {renderLinks()}
               {role ? (
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500/80 text-white px-4 py-2 text-sm font-semibold rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center gap-2"
+                  className="flex items-center bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200"
                 >
-                  <LogOut size={16} />
+                  <LogOut className="h-4 w-4 mr-2" />
                   Logout
                 </button>
               ) : (
                 <>
-                  <Link
-                    href="/login"
-                    className="bg-blue-500/80 text-white px-4 py-2 text-sm font-semibold rounded-md hover:bg-blue-600 transition-colors duration-200"
-                  >
-                    Login
+                  <Link href="/login">
+                    <button className="flex items-center text-slate-700 hover:text-blue-600 font-medium px-4 py-2 rounded-md transition-colors duration-200">
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Login
+                    </button>
                   </Link>
-                  <Link
-                    href="/register"
-                    className="bg-green-500/80 text-white px-4 py-2 text-sm font-semibold rounded-md hover:bg-green-600 transition-colors duration-200"
-                  >
-                    Register
+                  <Link href="/register">
+                    <button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200">
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Get Started
+                    </button>
                   </Link>
                 </>
               )}
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10"
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-md text-slate-700 hover:bg-slate-100 transition-colors duration-200"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Menu */}
       <aside
-        className={`
-          fixed top-0 right-0 h-full w-64 bg-gray-900/90 backdrop-blur-xl z-40 transition-transform duration-300 ease-in-out
-          ${isMenuOpen ? "translate-x-0" : "translate-x-full"}
-          md:hidden
-        `}
+        className={`fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        } md:hidden`}
       >
-        <div className="flex flex-col p-5 pt-20 space-y-4">
+        <div className="flex flex-col p-6 space-y-4 pt-20">
           {renderLinks(true)}
           {role ? (
             <button
               onClick={handleLogout}
-              className="mt-4 bg-red-500/80 w-full text-white px-4 py-3 text-md font-semibold rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center justify-center gap-2"
+              className="mt-4 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-3 rounded-md transition-colors duration-200"
             >
-              <LogOut size={18} />
+              <LogOut size={18} className="mr-2" />
               Logout
             </button>
           ) : (
             <>
-              <Link
-                href="/login"
-                className="mt-4 bg-blue-500/80 w-full text-white px-4 py-3 text-md font-semibold rounded-md hover:bg-blue-600 transition-colors duration-200 text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Login
+              <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                <button className="w-full flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-3 rounded-md transition-colors duration-200">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Login
+                </button>
               </Link>
-              <Link
-                href="/register"
-                className="bg-green-500/80 w-full text-white px-4 py-3 text-md font-semibold rounded-md hover:bg-green-600 transition-colors duration-200 text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Register
+              <Link href="/register" onClick={() => setIsMenuOpen(false)}>
+                <button className="w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-3 rounded-md transition-colors duration-200">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Get Started
+                </button>
               </Link>
             </>
           )}
@@ -150,7 +156,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div
           onClick={() => setIsMenuOpen(false)}
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/30 z-30 md:hidden"
         ></div>
       )}
     </>
